@@ -5,9 +5,7 @@ A simple weather app built with the [Visual Crossing Weather API](https://www.vi
 ## Links
 
 - **Project assignment:** [Weather App (roadmap.sh)](https://roadmap.sh/projects/weather-app)
-- **Live demo:** [https://triaamsss.github.io/https://github.com/triaamsss/weather-app/]
-(https://YOUR-USERNAME.github.io/YOUR-REPO/)
-<!-- TODO: replace with your deployed URL -->
+- **Live demo:** https://weatherly00.vercel.app/
 
 ## Features
 
