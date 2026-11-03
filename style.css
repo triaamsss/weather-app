@@ -1,0 +1,404 @@
+/* =====================================================================
+   WEATHER APP STYLES
+
+   TABLE OF CONTENTS
+   1. Color variables and base settings
+   2. Search form and buttons
+   3. Current weather card
+   4. Hourly list
+   5. Animations (stretch goal)
+   6. Responsive (small screens)
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. COLOR VARIABLES AND BASE SETTINGS
+   --------------------------------------------------------------------- */
+
+/* CSS variables: change a color here and the whole page follows */
+:root {
+  --bg1: #1e3a8a; /* top background color (dark blue) */
+  --bg2: #0ea5e9; /* bottom background color (light blue) */
+  --card: rgba(255, 255, 255, 0.14); /* card fill (transparent white) */
+  --card-border: rgba(255, 255, 255, 0.25); /* card border */
+  --text: #ffffff; /* main text color */
+  --muted: rgba(255, 255, 255, 0.72); /* secondary text (more faded) */
+  --accent: #fde68a; /* highlight color for keyboard focus */
+  --error: #fecaca; /* error message color */
+}
+
+/* Width of an element includes its padding and border (easier to calculate) */
+* {
+  box-sizing: border-box;
+}
+
+/* Gradient background for the whole page */
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  color: var(--text);
+  background: linear-gradient(160deg, var(--bg1), var(--bg2));
+  background-attachment: fixed; /* the gradient does not move when scrolling */
+}
+
+/* Main container: limited in width and centered */
+.app {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 1.6rem;
+}
+
+h2,
+h3 {
+  margin: 0;
+}
+
+/* Section headings "Next 24 hours" / "Previous 24 hours" */
+h3 {
+  margin: 28px 0 10px;
+  font-size: 1.05rem;
+}
+
+/* Helper class to hide an element.
+   !important makes it always win over other display rules.
+   script.js turns this class on and off */
+.hidden {
+  display: none !important;
+}
+
+/* Small, faded text for captions */
+.muted {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ---------------------------------------------------------------------
+   2. SEARCH FORM AND BUTTONS
+   --------------------------------------------------------------------- */
+
+/* Input and buttons sit side by side in one row */
+.search {
+  display: flex;
+  gap: 8px;
+}
+
+/* flex: 1 -> the input fills the remaining space; min-width: 0 -> it may shrink on small screens */
+.search input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+/* Yellow outline when the input is focused via keyboard (accessibility) */
+.search input:focus-visible {
+  outline: 3px solid var(--accent);
+}
+
+/* Base style for all buttons */
+button {
+  padding: 12px 16px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s; /* smooth change on hover/click */
+}
+
+/* :not(:disabled) -> hover and click effects do not apply to disabled buttons */
+button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* The button shrinks slightly while pressed */
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Disabled button (while data is loading) */
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--accent);
+}
+
+/* Status text below the form; min-height keeps the layout from jumping
+   when a message appears or disappears */
+.status {
+  min-height: 1.4em;
+  margin: 12px 2px 0;
+  color: var(--muted);
+}
+
+/* Error version: applied by setStatus(message, "error") in script.js */
+.status.error {
+  color: var(--error);
+}
+
+/* ---------------------------------------------------------------------
+   3. CURRENT WEATHER CARD
+   --------------------------------------------------------------------- */
+
+/* Glass card (transparent with a blur effect behind it) */
+.card {
+  margin-top: 12px;
+  padding: 20px;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  background: var(--card);
+  backdrop-filter: blur(8px);
+}
+
+/* Top row: location name on the left, refresh button on the right */
+.current-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Big icon on the left, temperature and conditions on the right */
+.current-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.big-icon {
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.big-temp {
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cond {
+  margin-top: 4px;
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+/* Three detail boxes (wind, rain, humidity) of equal width */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.stat strong {
+  font-size: 1.05rem;
+}
+
+/* ---------------------------------------------------------------------
+   4. HOURLY LIST
+   --------------------------------------------------------------------- */
+
+/* A row of cards that can be scrolled sideways (horizontal scroll) */
+.hours {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px; /* room for the scrollbar */
+  overflow-x: auto;
+  scroll-snap-type: x proximity; /* scrolling "snaps" to the nearest card edge */
+}
+
+/* One card per hour.
+   flex: 0 0 92px -> fixed 92px width, does not grow and does not shrink */
+.hour {
+  flex: 0 0 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  background: var(--card);
+  text-align: center;
+  scroll-snap-align: start;
+}
+
+/* Time, e.g. 14:00 */
+.hour .time {
+  font-weight: 600;
+}
+
+/* Day and date, e.g. Tue, Nov 3 */
+.hour .day {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+/* Weather emoji */
+.hour .icon {
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+/* Temperature */
+.hour .temp {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Chance of rain and wind speed */
+.hour .meta {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------
+   5. ANIMATIONS (STRETCH GOAL)
+   All animations use plain CSS, with no extra libraries.
+   --------------------------------------------------------------------- */
+
+/* Fade in while moving up slightly from below */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Grow from small while fading in */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Gentle blinking: used for the "loading" effect */
+@keyframes shimmer {
+  0% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.45;
+  }
+}
+
+/* One full rotation: for the refresh icon */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The "enter" class is added by script.js when new data is shown.
+   "both" -> the animation's starting state applies before the animation begins */
+.enter {
+  animation: fade-up 0.5s ease both;
+}
+
+/* The big weather icon appears with a bouncy effect (cubic-bezier),
+   delayed 0.15 seconds after its card */
+.enter .big-icon {
+  animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+/* Hourly cards appear one after another: each card is delayed 30ms more.
+   The --i variable (card order) is set by script.js in renderHours */
+.hour.enter {
+  animation: fade-up 0.45s ease both;
+  animation-delay: calc(var(--i, 0) * 30ms);
+}
+
+/* Skeleton (placeholder) card while data is loading */
+.hour.skeleton {
+  min-height: 132px;
+  background: rgba(255, 255, 255, 0.12);
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+/* The current weather card also blinks while loading */
+.card.loading {
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+/* The refresh button cannot be double-clicked while loading */
+#refresh-btn.spinning {
+  pointer-events: none;
+}
+
+/* Only the 🔄 icon spins (display: inline-block is needed
+   so that transform rotate works on a <span>) */
+#refresh-btn.spinning .spin-icon {
+  display: inline-block;
+  animation: spin 0.9s linear infinite;
+}
+
+/* Accessibility: if the user enabled the "reduce motion" setting
+   on their device, all animations and transitions are turned off */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   6. RESPONSIVE (SMALL SCREENS / PHONES)
+   --------------------------------------------------------------------- */
+
+@media (max-width: 520px) {
+  /* Temperature and icon are made smaller */
+  .big-temp {
+    font-size: 2.6rem;
+  }
+  .big-icon {
+    font-size: 3.6rem;
+  }
+  /* The three detail boxes are stacked (one column) */
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}

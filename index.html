@@ -1,0 +1,114 @@
+<!doctype html>
+<!-- Page language: English (helps browsers and screen readers)-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Makes the layout fit phone screens-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <!-- All styling and animations live in style.css-->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>🌤️ Weather App</h1>
+      <!-- =========================================== 
+            SEARCH FORM
+            Handled by script.js (the "submit" event on #search-form)
+            =========================================== -->
+      <form id="search-form" class="search">
+        <!-- Location input (must be filled in before the form can be sent )-->
+
+        <input
+          id="location-input"
+          type="text"
+          placeholder="Enter a location, e.g. Jakarta"
+          autocomplete="off"
+          required
+        />
+
+        <!-- Search button: submits the form -->
+        <button type="submit">Search</button>
+
+        <!-- My location button: type="button" so that it doesn't submit the form-->
+        <button type="button" id="geo-btn" title="Use my current location">
+          📍
+        </button>
+      </form>
+
+      <!-- Place for the status message ("Loading…") and error messages.
+            role="status" makes screen readers announce changes to its text -->
+      <p id="status" class="status" role="status"></p>
+
+      <!-- ===========================================
+            CURRENT WEATHER CARD 
+            Hidden at first (class "hidden"); script.js shows it
+             once the weather data has been fetched successfully
+            =========================================== -->
+
+      <section id="current" class="card current hidden">
+        <!-- Top row: location name, update time, and refresh button -->
+        <div class="current-head">
+          <div>
+            <h2 id="place">-</h2>
+            <p id="updated" class="muted"></p>
+          </div>
+          <!-- The icon is wrapped in a <span> so only the icon spins while loading -->
+          <button id="refresh-btn" type="button">
+            <span class="spin-icon">🔄</span> Refresh
+          </button>
+        </div>
+
+        <!-- Main part: big icon, temperature, and weather conditions -->
+        <div class="current-main">
+          <div id="current-icon" class="big-icon">☀️</div>
+          <div>
+            <div id="current-temp" class="big-temp">--°C</div>
+            <div id="current-cond" class="cond">-</div>
+          </div>
+        </div>
+
+        <!-- Three detail boxes: wind, chance of rain, humidity -->
+        <div class="stats">
+          <div class="stat">
+            <span class="muted">Wind</span><strong id="current-wind">-</strong>
+          </div>
+          <div class="stat">
+            <span class="muted">Chance of rain</span
+            ><strong id="current-rain">-</strong>
+          </div>
+          <div class="stat">
+            <span class="muted">Humidity</span
+            ><strong id="current-humidity">-</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+         HOURLY WEATHER LISTS
+         The hourly cards are created by script.js (renderHours function)
+         ===================================================== -->
+
+      <!-- Next 24 hours -->
+      <section id="next-section" class="hidden">
+        <h3>Next 24 hours</h3>
+        <div id="next-list" class="hours"></div>
+      </section>
+
+      <!-- Previous 24 hours -->
+      <section id="prev-section" class="hidden">
+        <h3>Previous 24 hours</h3>
+        <div id="prev-list" class="hours"></div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+       SCRIPTS
+       Order matters: config.js must load first because
+       script.js reads the CONFIG object (API key) from it.
+       config.js is listed in .gitignore, do not commit it.
+       ===================================================== -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
